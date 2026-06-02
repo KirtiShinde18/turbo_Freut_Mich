@@ -40,8 +40,6 @@ export function NavUser({
     const [ signout ] = useSignoutMutation()
     const { refresh, push} = useRouter()
 
-    const { data, isLoading: isMeLoading } = useGetMeQuery();
-
 
   // 🌼  SIGNOUT - bye bye cutie, see you soon 💕 👋🏻
   const handleSignout = async () => {

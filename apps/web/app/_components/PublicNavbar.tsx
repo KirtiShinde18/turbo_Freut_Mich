@@ -71,7 +71,7 @@ const PublicNavbar = () => {
 
         {/* LOGO */}
         <Link href="/" className="text-2xl font-bold tracking-wide">
-          Fruet Mich 👚
+          Freut Mich 👚
         </Link>
 
         {/* NAVIGATION */}

@@ -18,13 +18,13 @@ import { GalleryVerticalEndIcon, AudioLinesIcon, TerminalIcon, TerminalSquareIco
 // This is sample data.
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "Kirti",
+    email: "kirtishinde3520@gmail.com",
     avatar: "/avatars/shadcn.jpg",
   },
   teams: [
     {
-      name: "Fruet Mich 👚",
+      name: "Freut Mich 👚",
       logo: (
         <Shirt
         />

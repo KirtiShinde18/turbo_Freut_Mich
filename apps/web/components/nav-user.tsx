@@ -20,7 +20,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useSignoutMutation } from "@/redux/api/auth.api"
+import { useGetMeQuery, useSignoutMutation } from "@/redux/api/auth.api"
 import { ChevronsUpDownIcon, SparklesIcon, BadgeCheckIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -39,6 +39,8 @@ export function NavUser({
 
     const [ signout ] = useSignoutMutation()
     const { refresh, push} = useRouter()
+
+    const { data, isLoading: isMeLoading } = useGetMeQuery();
 
 
   // 🌼  SIGNOUT - bye bye cutie, see you soon 💕 👋🏻

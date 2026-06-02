@@ -25,7 +25,7 @@ app.use("/api/cart", cartRoute);
 
 // Test route
 app.get("/", (req, res) => {
-  res.json({ message: "Portfolio Turbo API is up and shining 🌸 🚀" });
+  res.json({ message: "Ecom Turbo API is up and shining 🌸 🚀" });
 });
 
 const PORT = 5500;

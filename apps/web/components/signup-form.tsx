@@ -44,10 +44,10 @@ export function SignupForm({
 // ---------------------
     const { register, reset, handleSubmit, formState: {errors}} = useForm({
       defaultValues: {
-        name: "Kittu",
-        mobile:"7821073611",
-        email: "kittushinde10@gmail.com",
-        password: "plmnko"
+        name: "",
+        mobile:"",
+        email: "",
+        password: ""
       },
       resolver: zodResolver(registerSchema)
     })

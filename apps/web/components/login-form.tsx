@@ -36,8 +36,8 @@ export function LoginForm({
     // 2️⃣ useForm with Zod
   const { register, reset, handleSubmit, formState: {errors}} = useForm({
     defaultValues: {
-      email: "kirtishinde3520@gmail.com",
-      password: "kirti@4996"
+      email: "",
+      password: ""
     },
     resolver: zodResolver(loginSchema)
   })

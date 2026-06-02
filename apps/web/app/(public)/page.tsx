@@ -76,14 +76,14 @@ export default function HeroSection() {
 
               <div className="mt-8 flex gap-4">
                 <Link
-                  href="/shop"
+                  href="/women"
                   className="rounded-lg bg-black dark:bg-white px-8 py-3 text-white dark:text-black font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors"
                 >
                   Shop Now
                 </Link>
 
                 <Link
-                  href="/collections"
+                  href="/women"
                   className="rounded-lg border border-neutral-300 dark:border-neutral-700 px-8 py-3 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
                 >
                   Explore

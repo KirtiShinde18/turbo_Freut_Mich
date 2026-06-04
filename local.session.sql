@@ -4,5 +4,5 @@
 ---------------------------------------------
 -- profile
 ---------------------------------------------
-SELECT * FROM users;
--- SELECT * FROM products;
+-- SELECT * FROM users;
+SELECT * FROM products;

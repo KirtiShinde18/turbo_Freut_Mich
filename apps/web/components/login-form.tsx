@@ -10,6 +10,7 @@ import {zodResolver} from "@hookform/resolvers/zod"
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
@@ -45,21 +46,18 @@ export function LoginForm({
   const handleFormSubmit = async (userData: LOGIN_REQUEST) => {
     try {
       const data = await signin(userData).unwrap()
-      if(data.result?.role === "admin"){
+      if (data.result?.role === "admin") {
         push("/admin")
         reset()
         toast.success("Admin Login Success")
-        // console.log("login Success", data);
       } else {
         push("/women")
         reset()
-        toast.success(" Login Success")
+        toast.success("Login Success")
       }
-      
-      
-    } catch (error) {
-      console.log(error);
-      
+    } catch (error: any) {
+      console.log(error)
+      toast.error(error?.data?.message || error?.message || "Invalid login credentials")
     }
   }
 
@@ -67,7 +65,7 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8" onSubmit={handleSubmit(handleFormSubmit)}> 
+          <form className="p-6 md:p-8" onSubmit={handleSubmit(handleFormSubmit)} noValidate> 
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Welcome back 👋🏻</h1>
@@ -78,12 +76,14 @@ export function LoginForm({
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
-                {...register("email")}
+                  {...register("email")}
                   id="email"
                   type="email"
                   placeholder=""
+                  aria-invalid={!!errors.email}
                   required
                 />
+                <FieldError errors={errors.email ? [errors.email] : undefined} />
               </Field>
               <Field>
                 <div className="flex items-center">
@@ -95,7 +95,14 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input {...register("password")} id="password" type="password" required />
+                <Input
+                  {...register("password")}
+                  id="password"
+                  type="password"
+                  aria-invalid={!!errors.password}
+                  required
+                />
+                <FieldError errors={errors.password ? [errors.password] : undefined} />
               </Field>
               <Field>
                 <Button disabled={isLoading} type="submit">Login</Button>

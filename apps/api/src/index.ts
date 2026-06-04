@@ -15,6 +15,13 @@ app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 
 app.use(express.json());
 
+// 👇 Debug Logs
+console.log("NODE_ENV =", NODE_ENV);
+console.log("FRONTEND_URL =", FRONTEND_URL);
+console.log("LIVE_URL =", process.env.LIVE_URL);
+console.log("LOCAL_URL =", process.env.LOCAL_URL);
+console.log("PG_URL EXISTS =", !!process.env.PG_URL);
+
 // -----------------------------
 // Routes
 // -----------------------------

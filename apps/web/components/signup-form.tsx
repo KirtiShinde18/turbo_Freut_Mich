@@ -6,15 +6,16 @@ import { Card, CardContent } from "@/components/ui/card"
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import z, { ZodType } from "zod"
-import { REGISTER_CUSTOMER_REQUEST } from "@repo/types"
+import { REGISTER_CUSTOMER_REQUEST, LOGIN_REQUEST } from "@repo/types"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useRegisterCustomerMutation } from "@/redux/api/auth.api"
+import { useRegisterCustomerMutation, useSigninMutation } from "@/redux/api/auth.api"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useForm } from "react-hook-form"
@@ -24,8 +25,9 @@ export function SignupForm({
   ...props
 }: React.ComponentProps<"div">) {
 
-  const {push} = useRouter()
-  const [ registerCustomer, {isLoading}] = useRegisterCustomerMutation()
+  const { push } = useRouter()
+  const [registerCustomer, { isLoading }] = useRegisterCustomerMutation()
+  const [signin] = useSigninMutation()
 
 // ---------------------
 // 1️⃣ Zod Schema
@@ -33,23 +35,21 @@ export function SignupForm({
   const registerSchema = z.object({
     name: z.string().min(1, "Name is required"),
     email: z.string().email("Invalid email"),
-      mobile: z
-    .string()
-    .regex(/^[6-9]\d{9}$/, "Invalid mobile number"),
-    password: z.string().min(3, "Password must be at least 3 characters"),
-  })satisfies ZodType<REGISTER_CUSTOMER_REQUEST>
+    mobile: z.string().regex(/^[6-9]\d{9}$/, "Invalid mobile number"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+  }) satisfies ZodType<REGISTER_CUSTOMER_REQUEST>
 
 // ---------------------
 // 2️⃣ useForm with Zod
 // ---------------------
-    const { register, reset, handleSubmit, formState: {errors}} = useForm({
+    const { register, reset, handleSubmit, formState: { errors } } = useForm<REGISTER_CUSTOMER_REQUEST>({
       defaultValues: {
         name: "",
-        mobile:"",
+        mobile: "",
         email: "",
-        password: ""
+        password: "",
       },
-      resolver: zodResolver(registerSchema)
+      resolver: zodResolver(registerSchema),
     })
 
 // ---------------------
@@ -58,11 +58,18 @@ export function SignupForm({
 const handleFormSubmit = async (userData: REGISTER_CUSTOMER_REQUEST) => {
   try {
     const res = await registerCustomer(userData).unwrap()
+    toast.success(res.message || "Registered successfully")
 
-    // ✅ SAVE USER
-    localStorage.setItem("user", JSON.stringify(res.data))
+    // Auto-login after successful registration so customer can access protected flow
+    const loginData: LOGIN_REQUEST = {
+      email: userData.email,
+      password: userData.password,
+    }
 
-    if (res.data.role === "admin") {
+    const loginRes = await signin(loginData).unwrap()
+    localStorage.setItem("user", JSON.stringify(loginRes.result))
+
+    if (loginRes.result?.role === "admin") {
       push("/admin")
       toast.success("Admin Login Success")
     } else {
@@ -71,9 +78,9 @@ const handleFormSubmit = async (userData: REGISTER_CUSTOMER_REQUEST) => {
     }
 
     reset()
-  } catch (error) {
+  } catch (error: any) {
     console.log(error)
-    toast.error("Something went wrong")
+    toast.error(error?.data?.message || error?.message || "Something went wrong")
   }
 }
 
@@ -81,7 +88,7 @@ const handleFormSubmit = async (userData: REGISTER_CUSTOMER_REQUEST) => {
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8" onSubmit={handleSubmit(handleFormSubmit)}>
+          <form className="p-6 md:p-8" onSubmit={handleSubmit(handleFormSubmit)} noValidate>
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Create your account ✏️</h1>
@@ -91,15 +98,16 @@ const handleFormSubmit = async (userData: REGISTER_CUSTOMER_REQUEST) => {
               </div>
 
               <Field>
-                <FieldLabel htmlFor="name">name</FieldLabel>
+                <FieldLabel htmlFor="name">Name</FieldLabel>
                 <Input
                   {...register("name")}
                   id="name"
-                  type="name"
+                  type="text"
                   placeholder=""
+                  aria-invalid={!!errors.name}
                   required
                 />
-
+                <FieldError errors={errors.name ? [errors.name] : undefined} />
               </Field>
 
               <Field>
@@ -109,8 +117,10 @@ const handleFormSubmit = async (userData: REGISTER_CUSTOMER_REQUEST) => {
                   id="email"
                   type="email"
                   placeholder=""
+                  aria-invalid={!!errors.email}
                   required
                 />
+                <FieldError errors={errors.email ? [errors.email] : undefined} />
                 <FieldDescription>
                   We&apos;ll use this to contact you. We will not share your
                   email with anyone else.
@@ -118,26 +128,37 @@ const handleFormSubmit = async (userData: REGISTER_CUSTOMER_REQUEST) => {
               </Field>
 
               <Field>
-                {/* <Field className="grid grid-cols-2 gap-4"> */}
-                <Field className="">
-                  <Field>
-                    <FieldLabel htmlFor="password">Password</FieldLabel>
-                    <Input {...register("password")} id="password" type="password" required />
-                  </Field>
-                  {/* <Field>
-                    <FieldLabel htmlFor="confirm-password">
-                      Confirm Password
-                    </FieldLabel>
-                    <Input id="confirm-password" type="password" required />
-                  </Field> */}
-                </Field>
+                <FieldLabel htmlFor="mobile">Mobile</FieldLabel>
+                <Input
+                  {...register("mobile")}
+                  id="mobile"
+                  type="tel"
+                  placeholder="Enter 10-digit mobile"
+                  aria-invalid={!!errors.mobile}
+                  required
+                />
+                <FieldError errors={errors.mobile ? [errors.mobile] : undefined} />
+                <FieldDescription>
+                  Must be a valid 10-digit mobile number starting with 6-9.
+                </FieldDescription>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <Input
+                  {...register("password")}
+                  id="password"
+                  type="password"
+                  aria-invalid={!!errors.password}
+                  required
+                />
+                <FieldError errors={errors.password ? [errors.password] : undefined} />
                 <FieldDescription>
                   Must be at least 8 characters long.
                 </FieldDescription>
               </Field>
 
               <Field>
-                <Button type="submit">Create Account</Button>
+                <Button disabled={isLoading} type="submit">Create Account</Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                 Or continue with

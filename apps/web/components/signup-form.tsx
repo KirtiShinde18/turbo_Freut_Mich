@@ -73,7 +73,7 @@ const handleFormSubmit = async (userData: REGISTER_CUSTOMER_REQUEST) => {
       push("/admin")
       toast.success("Admin Login Success")
     } else {
-      push("/women")
+      push("/login")
       toast.success("Login Success")
     }
 

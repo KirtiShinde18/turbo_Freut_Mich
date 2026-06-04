@@ -132,26 +132,26 @@ export const registerCustomer = async (
     //   });
     // }
     const existingEmail = await db
-  .select()
-  .from(user)
-  .where(eq(user.email, email));
+      .select()
+      .from(user)
+      .where(eq(user.email, email));
 
-if (existingEmail.length > 0) {
-  return res.status(400).json({
-    message: "Email already registered",
-  });
-}
-
-const existingMobile = await db
-  .select()
-  .from(user)
-  .where(eq(user.mobile, mobile));
-
-if (existingMobile.length > 0) {
-  return res.status(400).json({
-    message: "Mobile number already registered",
-  });
-}
+    if (existingEmail.length > 0) {
+      return res.status(400).json({
+        message: "Email already registered",
+      });
+    }
+    
+    const existingMobile = await db
+      .select()
+      .from(user)
+      .where(eq(user.mobile, mobile));
+    
+    if (existingMobile.length > 0) {
+      return res.status(400).json({
+        message: "Mobile number already registered",
+      });
+    }
 
     // hash password
     const hashedPassword = await bcrypt.hash(password, 10);

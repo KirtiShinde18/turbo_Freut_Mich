@@ -118,7 +118,8 @@ const handleFormSubmit = async (userData: REGISTER_CUSTOMER_REQUEST) => {
               </Field>
 
               <Field>
-                <Field className="grid grid-cols-2 gap-4">
+                {/* <Field className="grid grid-cols-2 gap-4"> */}
+                <Field className="">
                   <Field>
                     <FieldLabel htmlFor="password">Password</FieldLabel>
                     <Input {...register("password")} id="password" type="password" required />

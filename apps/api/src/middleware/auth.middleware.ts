@@ -11,7 +11,7 @@ interface AuthRequest extends Request {
 }
 
 export const protect = (role: string) => async ( req: AuthRequest, res: Response, next: NextFunction) => {
-    const token = req.cookies.QUEEN
+    const token = req.cookies.ADMIN
     if(!token){
         return res.status(401).json({message: 'Unauthorised access'})
     }
